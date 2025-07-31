@@ -108,7 +108,7 @@ parse_size(const std::string &str, std::pair<int,int> &size)
  *
  * @return the parsed frame end method
  */
-static Options::FrameEnd 
+static Options::FrameEnd
 frame_end_from_str(const std::string &str)
 {
     Options::FrameEnd m = Options::FrameEndDefault;
@@ -163,8 +163,10 @@ results_from_str(std::string const& str)
             results = static_cast<Options::Results>(results | Options::ResultsCpu);
         else if (res == "shader")
             results = static_cast<Options::Results>(results | Options::ResultsShader);
-        else
-            throw std::runtime_error{"Invalid result type '" + res + "'"};
+        else {
+            printf("Invalid result type '%s'\n", res.c_str());
+            return results;
+        }
     }
 
     return results;
@@ -184,8 +186,10 @@ winsys_options_from_str(std::string const& str)
         Util::split(opt, '=', kv, Util::SplitModeNormal);
         if (kv.size() == 2)
             ret.push_back({kv[0], kv[1]});
-        else
-            throw std::runtime_error{"Invalid window system option '" + opt + "'"};
+        else {
+            printf("Invalid window system option '%s'\n", opt.c_str());
+            return {};
+        }
     }
 
     return ret;
@@ -195,21 +199,32 @@ unsigned int
 offscreen_from_str(std::string const& str)
 {
     int ret = 0;
-    try
-    {
-        ret = std::stol(str);
-        if (ret < 0) throw std::runtime_error{""};
+
+    // 使用strtol替代stol，避免异常
+    char* end = nullptr;
+    long value = std::strtol(str.c_str(), &end, 10);
+
+    // 检查转换是否成功
+    if (end == str.c_str() || *end != '\0') {
+        printf("Invalid offscreen option value '%s'\n", str.c_str());
+        return 0;
     }
-    catch (...)
-    {
-        throw std::runtime_error{"Invalid offscreen option value '" + str + "'"};
+
+    ret = static_cast<int>(value);
+
+    // 检查值是否有效
+    if (ret < 0) {
+        printf("Invalid offscreen option value '%s': value must be non-negative\n", str.c_str());
+        return 0;
     }
 
     /* Don't allow too many offscreen buffers to avoid exhausting memory. */
-    if (ret > 10)
-        throw std::runtime_error{"Too large offscreen option value '" + str + "'"};
+    if (ret > 10) {
+        printf("Too large offscreen option value '%s': maximum is 10\n", str.c_str());
+        return 0;
+    }
 
-    return ret;
+    return static_cast<unsigned int>(ret);
 }
 
 void

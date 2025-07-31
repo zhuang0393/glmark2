@@ -11,7 +11,7 @@ Arguments from an extra intent key
 The 'args' extra intent key is used to specify arguments. For example:
 
 am start -a android.intent.action.MAIN \
-         -n org.linaro.glmark2/org.linaro.glmark2.Glmark2Activity \
+         -n org.linaro.glmark2c/org.linaro.glmark2c.Glmark2Activity \
          -e args '-b :duration=2 -b texture -f /path/file --debug'
 
 Arguments from a file

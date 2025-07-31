@@ -95,7 +95,7 @@ public:
     }
 };
 
-/** 
+/**
  * Converts an std::vector containing arguments to argc,argv.
  */
 static void
@@ -109,9 +109,9 @@ arg_vector_to_argv(const std::vector<std::string> &arguments, int &argc, char **
         argv[i + 1] = strdup(arguments[i].c_str());
 }
 
-/** 
+/**
  * Populates the command line arguments from the arguments file.
- * 
+ *
  * @param argc the number of arguments
  * @param argv the argument array
  */
@@ -132,9 +132,9 @@ get_args_from_file(const std::string &arguments_file, int &argc, char **&argv)
     arg_vector_to_argv(arguments, argc, argv);
 }
 
-/** 
+/**
  * Populates the command line arguments from the arguments file.
- * 
+ *
  * @param argc the number of arguments
  * @param argv the argument array
  */
@@ -147,9 +147,9 @@ get_args_from_string(const std::string &args_str, int &argc, char **&argv)
     arg_vector_to_argv(arguments, argc, argv);
 }
 
-/** 
+/**
  * Releases the command line arguments.
- * 
+ *
  * @param argc the number of arguments
  * @param argv the argument array
  */
@@ -162,9 +162,9 @@ release_args(int argc, char **argv)
     delete[] argv;
 }
 
-/** 
+/**
  * Converts a GLVisualConfig Java object to a GLVisualConfig C++ object.
- * 
+ *
  * @param env the JNIEnv
  * @param jvc the Java VisualConfig object to convert
  * @param vc the C++ VisualConfig object to fill
@@ -180,7 +180,7 @@ gl_visual_config_from_jobject(JNIEnv *env, jobject jvc, GLVisualConfig &vc)
 
     fid = env->GetFieldID(cls, "green", "I");
     vc.green = env->GetIntField(jvc, fid);
-    
+
     fid = env->GetFieldID(cls, "blue", "I");
     vc.blue = env->GetIntField(jvc, fid);
 
@@ -194,15 +194,15 @@ gl_visual_config_from_jobject(JNIEnv *env, jobject jvc, GLVisualConfig &vc)
     vc.buffer = env->GetIntField(jvc, fid);
 }
 
-/** 
+/**
  * Creates a SceneInfo Java object from a Scene.
- * 
+ *
  * @param env the JNIEnv
  */
 static jobject
 scene_info_from_scene(JNIEnv *env, Scene &scene)
 {
-    jclass cls = env->FindClass("org/linaro/glmark2/SceneInfo");
+    jclass cls = env->FindClass("org/linaro/glmark2c/SceneInfo");
     jmethodID constructor = env->GetMethodID(cls, "<init>", "(Ljava/lang/String;)V");
     jmethodID add_option = env->GetMethodID(cls, "addOption", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;)V");
 
@@ -226,7 +226,7 @@ scene_info_from_scene(JNIEnv *env, Scene &scene)
         jclass string_cls = env->FindClass("java/lang/String");
         jobjectArray opt_acceptable_values = env->NewObjectArray(opt.acceptable_values.size(),
                                                                  string_cls, 0);
-        
+
         for (size_t i = 0; i < opt.acceptable_values.size(); i++) {
             jstring opt_value = env->NewStringUTF(opt.acceptable_values[i].c_str());
             env->SetObjectArrayElement(opt_acceptable_values, i, opt_value);
@@ -393,9 +393,9 @@ Java_org_linaro_glmark2_native_getSceneInfo(JNIEnv* env, jclass clazz,
     }
 
     /* Create a SceneInfo[] array */
-    jclass si_cls = env->FindClass("org/linaro/glmark2/SceneInfo");
+    jclass si_cls = env->FindClass("org/linaro/glmark2c/SceneInfo");
     jobjectArray si_array = env->NewObjectArray(si_vector.size(), si_cls, 0);
-    
+
     /* Populate the SceneInfo[] array */
     for (size_t i = 0; i < si_vector.size(); i++)
         env->SetObjectArrayElement(si_array, i, si_vector[i]);
@@ -426,12 +426,12 @@ static JNINativeMethod glmark2_native_methods[] = {
     },
     {
         "scoreConfig",
-        "(Lorg/linaro/glmark2/GLVisualConfig;Lorg/linaro/glmark2/GLVisualConfig;)I",
+        "(Lorg/linaro/glmark2c/GLVisualConfig;Lorg/linaro/glmark2c/GLVisualConfig;)I",
         reinterpret_cast<void*>(Java_org_linaro_glmark2_native_scoreConfig)
     },
     {
         "getSceneInfo",
-        "(Landroid/content/res/AssetManager;)[Lorg/linaro/glmark2/SceneInfo;",
+        "(Landroid/content/res/AssetManager;)[Lorg/linaro/glmark2c/SceneInfo;",
         reinterpret_cast<void*>(Java_org_linaro_glmark2_native_getSceneInfo)
     }
 };
@@ -459,7 +459,7 @@ register_native_methods(JNIEnv* env, const char* className,
 static int
 register_natives(JNIEnv *env)
 {
-    const char* const class_path_name = "org/linaro/glmark2/Glmark2Native";
+    const char* const class_path_name = "org/linaro/glmark2c/Glmark2Native";
     return register_native_methods(env, class_path_name,
                                    glmark2_native_methods,
                                    sizeof(glmark2_native_methods) /
